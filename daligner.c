@@ -743,29 +743,39 @@ int main(int argc, char *argv[])
         Close_DB(bblock);
 
         command = CommandBuffer(aroot,broot);
-
-        sprintf(command,"LAsort /tmp/%s.%s.[CN]*.las",aroot,broot);
+        
+        
+        //patch to enable tmpdir based on environment variable
+        char* tmpDir;
+        tmpDir = getenv ("TMPDIR");
+        if (tmpDir==NULL || tmpDir[0]!='/'){ 
+            tmpDir="/tmp";
+        }
+        
+        
+        
+        sprintf(command,"LAsort %s/%s.%s.[CN]*.las",tmpDir,aroot,broot);
         if (VERBOSE)
           printf("\n%s\n",command);
         system(command);
-        sprintf(command,"LAmerge %s.%s.las /tmp/%s.%s.[CN]*.S.las",aroot,broot,aroot,broot);
+        sprintf(command,"LAmerge %s.%s.las %s/%s.%s.[CN]*.S.las",aroot,broot,tmpDir,aroot,broot);
         if (VERBOSE)
           printf("%s\n",command);
         system(command);
-        sprintf(command,"rm /tmp/%s.%s.[CN]*.las",aroot,broot);
+        sprintf(command,"rm %s/%s.%s.[CN]*.las",tmpDir,aroot,broot);
         if (VERBOSE)
           printf("%s\n",command);
         system(command);
         if (aroot != broot && SYMMETRIC)
-          { sprintf(command,"LAsort /tmp/%s.%s.[CN]*.las",broot,aroot);
+          { sprintf(command,"LAsort %s/%s.%s.[CN]*.las",tmpDir,broot,aroot);
             if (VERBOSE)
               printf("%s\n",command);
             system(command);
-            sprintf(command,"LAmerge %s.%s.las /tmp/%s.%s.[CN]*.S.las",broot,aroot,broot,aroot);
+            sprintf(command,"LAmerge %s.%s.las %s/%s.%s.[CN]*.S.las",broot,aroot,tmpDir,broot,aroot);
             if (VERBOSE)
               printf("%s\n",command);
             system(command);
-            sprintf(command,"rm /tmp/%s.%s.[CN]*.las",broot,aroot);
+            sprintf(command,"rm %s/%s.%s.[CN]*.las",tmpDir,broot,aroot);
             if (VERBOSE)
               printf("%s\n",command);
             system(command);
